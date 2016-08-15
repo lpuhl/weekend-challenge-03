@@ -1,30 +1,27 @@
 $(document).ready(function() {
+  var problem = {};
 
-  $('#calc-app').on('submit', function(event) {
+  $('.operator').on('click', function(event) {
     event.preventDefault();
-    var problem = {};
+    // create "type of operator" property on problem object
+    problem.type = $(this).attr('id');
+    console.log('operator: ', problem.type);
+  });
 
-
-
-    $.each($("#calc-app").serializeArray(), function(i, field) {
+  $('.calc-app').on('submit', function(event) {
+    event.preventDefault();
+    $.each($(".calc-app").serializeArray(), function(i, field) {
       problem[field.name] = field.value;
     });
     console.log('problem: ', problem);
-
-    // $('.operator').on('click', function(event) {
-    //   // create "type of operator" property on problem object
-    //   problem.type = $(this).attr('id');
-    //   console.log('operator: ' + problem.type);
-    //   return problem;
-    // });
 
     $.ajax({
       type: 'POST',
       url: '/problemsolve',
       data: problem,
       success: function(data) {
+        getAnswer();
         console.log('post request successful!');
-        // mathAnswer();
       },
       error: function() {
         console.log('post failed');
@@ -32,18 +29,19 @@ $(document).ready(function() {
       }
     });
 
-    // function mathAnswer() {
-    //   $.ajax({
-    //     type: 'GET',
-    //     url: '/problemsolve',
-    //     success: function(response) {
-    //       $("#answer").empty();
-    //       response.forEach(function(problem) {
-    //         appendDom(problem);
-    //       });
-    //     }
-    //   })
-    // }
+    function getAnswer() {
+      $.ajax({
+        type: 'GET',
+        url: '/problemsolve',
+        success: function(solution) {
+          $("#answer").empty();
+          $('#answer').append(solution);
+        },
+        error: function () {
+          console.log('Calculator did not work');
+        },
+      })
+    }
 
   });
 });
