@@ -5,15 +5,15 @@ $(document).ready(function() {
     event.preventDefault();
     // create "type of operator" property on problem object
     problem.type = $(this).attr('id');
-    console.log('operator: ', problem.type);
+    // console.log('Operator: ', problem.type);
   });
 
-  $('.calc-app').on('submit', function(event) {
+  $('.numberinputs').on('submit', function(event) {
     event.preventDefault();
-    $.each($(".calc-app").serializeArray(), function(i, field) {
+    $.each($(".numberinputs").serializeArray(), function(i, field) {
       problem[field.name] = field.value;
     });
-    console.log('problem: ', problem);
+    console.log('Problem: ', problem);
 
     $.ajax({
       type: 'POST',
@@ -21,7 +21,7 @@ $(document).ready(function() {
       data: problem,
       success: function(data) {
         getAnswer();
-        console.log('post request successful!');
+        // console.log('post request successful!');
       },
       error: function() {
         console.log('post failed');
@@ -29,13 +29,20 @@ $(document).ready(function() {
       }
     });
 
+    $('#clear').click(function() {
+      $('#answer').empty();
+      $('form').find("input[type=text], textarea").val("");
+    });
+
     function getAnswer() {
       $.ajax({
         type: 'GET',
         url: '/problemsolve',
         success: function(solution) {
-          $("#answer").empty();
-          $('#answer').append(solution);
+          $('#answer').empty();
+          $('#answer').append(solution.answer);
+          // console.log (solution.answer);
+
         },
         error: function () {
           console.log('Calculator did not work');
